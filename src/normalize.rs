@@ -48,6 +48,7 @@ normalizations! {
     LinesOutsideInputFile,
     Unindent,
     AndOthers,
+    LongTypeName,
     // New normalization steps are to be inserted here at the end so that any
     // snapshots saved before your normalization change remain passing.
 }
@@ -352,6 +353,15 @@ impl<'a> Filter<'a> {
                     && line[num_start..num_end].bytes().all(|b| b.is_ascii_digit())
                 {
                     line.replace_range(num_start..num_end, "$N");
+                }
+            }
+        }
+
+        if self.normalization >= LongTypeName {
+            const LONG_TYPE_NAME_BASE: &str = ".long-type-";
+            if let Some(start_pos) = line.find(LONG_TYPE_NAME_BASE) {
+                if let Some(end_pos) = line.find(".txt") {
+                    line.replace_range((start_pos + LONG_TYPE_NAME_BASE.len())..end_pos, "hash");
                 }
             }
         }
