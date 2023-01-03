@@ -360,8 +360,11 @@ impl<'a> Filter<'a> {
         if self.normalization >= LongTypeName {
             const LONG_TYPE_NAME_BASE: &str = ".long-type-";
             if let Some(start_pos) = line.find(LONG_TYPE_NAME_BASE) {
-                if let Some(end_pos) = line.find(".txt") {
-                    line.replace_range((start_pos + LONG_TYPE_NAME_BASE.len())..end_pos, "hash");
+                if let Some(end_pos) = line[start_pos..].find(".txt") {
+                    line.replace_range((start_pos + LONG_TYPE_NAME_BASE.len())..(start_pos + end_pos), "hash");
+                }
+                if let Some(pre_pos) = line[..start_pos].find(self.context.krate) {
+                    line.replace_range((pre_pos + self.context.krate.len() + 1)..start_pos, "hash");
                 }
             }
         }
